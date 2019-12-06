@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+
+    <typeAliases>
+        <package name="cn.bean"/>
+    </typeAliases>
+
+    <!--<plugins>
+        &lt;!&ndash; 配置分页插件&ndash;&gt;
+        <plugin interceptor="com.github.pagehelper.PageInterceptor">
+            &lt;!&ndash; 合理化分页&ndash;&gt;
+            <property name="reasonable" value="true"/>
+            &lt;!&ndash;该参数对使用 RowBounds 作为分页参数时有效。 当该参数设置为 true 时，会将 RowBounds 中的 offset 参数当成 pageNum 使用，可以用页码和页面大小两个参数进行分页。&ndash;&gt;
+            <property name="offsetAsPageNum" value="true"/>
+            <property name="supportMethodsArguments" value="true"/>
+            <property name="params" value="pageno=pageno;pagesize=pagesize;"/>
+        </plugin>
+    </plugins>-->
+
+</configuration>

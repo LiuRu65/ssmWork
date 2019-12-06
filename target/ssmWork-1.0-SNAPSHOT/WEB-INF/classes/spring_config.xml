@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mybatis="http://mybatis.org/schema/mybatis-spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd">
+
+<!--引入springmvc配置文件，但如果web.xml扫描springmvc文件的话，此项不用配置-->
+    <!--<import resource="classpath:springmvc.xml"></import>-->
+<!--自动扫描service层-->
+    <context:component-scan base-package="cn"></context:component-scan>
+<!--properties文件的配置-->
+    <context:property-placeholder location="classpath:mail.properties" ignore-unresolvable="true"/>
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+<!--配置数据源-->
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+        <property name="driverClass" value="${driverClass}"/>
+        <property name="jdbcUrl" value="${url}"/>
+        <property name="user" value="${user}"/>
+        <property name="password" value="${password}"/>
+        <property name="initialPoolSize" value="${initpoolsize}"/>
+        <property name="minPoolSize" value="${minpoolsize}"/>
+        <property name="maxPoolSize" value="${maxpoolsize}"/>
+        <property name="acquireIncrement" value="${acquireIncrement}"/>
+    </bean>
+<!--配置事务-->
+    <!--事务管理器-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <!--通知-->
+    <tx:advice id="message" transaction-manager="transactionManager">
+        <tx:attributes>
+            <!--read-only是否只读  propagation事务的传播行为  isolation事务的隔离级别-->
+            <tx:method name="select*" read-only="true" propagation="SUPPORTS" isolation="DEFAULT"/>
+            <tx:method name="find*" read-only="true" propagation="SUPPORTS" isolation="DEFAULT"/>
+            <tx:method name="insert*" propagation="REQUIRED" isolation="DEFAULT"/>
+            <tx:method name="update*" propagation="REQUIRED" isolation="DEFAULT"/>
+            <tx:method name="delete*" propagation="REQUIRED" isolation="DEFAULT"/>
+        </tx:attributes>
+    </tx:advice>
+    <!--AOP配置切点和通知-->
+    <aop:config>
+        <aop:pointcut id="qd" expression="within(cn.service..*)"></aop:pointcut>
+        <aop:advisor advice-ref="message" pointcut-ref="qd"></aop:advisor>
+    </aop:config>
+<!--配置spring和mybatis的整合-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <!--当接口和xml不在同一位置时，需配置此项-->
+        <property name="mapperLocations" value="classpath:mapperxml/*.xml"/>
+        <!--引入mybatis的配置文件-->
+        <property name="configLocation" value="classpath:mybatis_config.xml"/>
+    </bean>
+<!--扫描接口-->
+    <mybatis:scan base-package="cn.dao"></mybatis:scan>
+<!--发送邮件的配置 此id固定，不可随意更改-->
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="username" value="${mail.sender.name}"/>
+        <property name="password" value="${mail.sender.password}"/>
+        <property name="host" value="${mail.host}"/>
+        <property name="port" value="${mail.port}"/>
+        <property name="protocol" value="${mail.protocol}"/>
+        <property name="defaultEncoding" value="utf-8"/>
+        <!--查看发送邮件过程的信息-->
+        <!--<property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.auth">true</prop>
+                <prop key="mail.debug">true</prop>
+            </props>
+        </property>-->
+    </bean>
+
+</beans>
