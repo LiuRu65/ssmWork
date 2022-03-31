@@ -15,7 +15,7 @@
         <!--mybatis版本号3.5+-->
         <mybatis.version>3.5.2</mybatis.version>
         <!--spring版本号5.0+-->
-        <spring.version>5.1.5.RELEASE</spring.version>
+        <spring.version>5.3.18</spring.version>
         <!--spring batch4.0+-->
         <!--java8+-->
     </properties>
